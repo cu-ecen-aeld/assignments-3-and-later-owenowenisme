@@ -1,5 +1,7 @@
 #include "systemcalls.h"
-
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
 /**
  * @param cmd the command to execute with system()
  * @return true if the command in @param cmd was executed
@@ -10,14 +12,8 @@
 bool do_system(const char *cmd)
 {
 
-/*
- * TODO  add your code here
- *  Call the system() function with the command set in the cmd
- *   and return a boolean true if the system() call completed with success
- *   or false() if it returned a failure
-*/
-
-    return true;
+    int res = system(cmd);
+    return res?false:true;
 }
 
 /**
@@ -58,9 +54,8 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
-
+    execv(command[0], command);
     va_end(args);
-
     return true;
 }
 
@@ -84,7 +79,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     // and may be removed
     command[count] = command[count];
 
-
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
 /*
  * TODO
  *   Call execv, but first using https://stackoverflow.com/a/13784315/1446624 as a refernce,
@@ -92,8 +87,11 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *   The rest of the behaviour is same as do_exec()
  *
 */
+    if (dup2(fd, 1) == -1) {
+        // Handle error
+    }
 
+    execv(command[0], command);
     va_end(args);
-
     return true;
 }
